@@ -40,16 +40,45 @@
         .modal.flex {
             display: flex;
         }
-        /* Hide elements based on role */
         .admin-only { display: none; }
+
+        /* --- Mobile Responsive Styles --- */
+        @media (max-width: 1024px) {
+            #sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100%;
+                width: 280px;
+                z-index: 100;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+            #sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 99;
+            }
+            #sidebar-overlay.open {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
 
     <div id="login-screen" class="flex items-center justify-center h-screen bg-gray-200">
         <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-            <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">CafeManager</h2>
-            <p class="text-center text-gray-500 mb-8">Please sign in to continue</p>
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">lisa-cafemanager</h2>
+            <p class="text-center text-gray-500 mb-8">Log in to your account</p>
             <form id="loginForm">
                 <div class="mb-4">
                     <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
@@ -59,17 +88,23 @@
                     <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                     <input type="password" id="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Sign In</button>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Log In</button>
                  <p id="loginError" class="text-red-500 text-sm mt-4 text-center"></p>
             </form>
         </div>
     </div>
 
-    <div id="app-container" class="hidden h-screen bg-gray-200">
-        <div class="w-64 bg-gray-800 text-white flex flex-col">
-            <div class="px-8 py-6 border-b border-gray-700">
-                <h2 class="text-2xl font-semibold">CafeManager</h2>
-                 <p class="text-sm text-gray-400">A coffee a day, keeps you awake.</p>
+    <!-- App Container -->
+    <div id="app-container" class="hidden lg:flex h-screen bg-gray-200">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-gray-800 text-white flex-col flex-shrink-0 lg:flex">
+            <div class="px-8 py-6 border-b border-gray-700 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-semibold">Lisa-CafeManager</h2>
+                    <p class="text-sm text-gray-400">A coffee a day keep depression away</p>
+                </div>
+                <!-- Close button (mobile only) -->
+                <button id="closeSidebarBtn" class="lg:hidden text-2xl text-gray-400 hover:text-white">&times;</button>
             </div>
             <nav class="flex-1 px-4 py-4 space-y-2">
                 <a href="#" class="sidebar-link active flex items-center px-4 py-2 rounded-lg" data-target="dashboard">
@@ -79,7 +114,7 @@
                     <i class="fas fa-cash-register w-6"></i><span>Take Order</span>
                 </a>
                 <a href="#" class="sidebar-link admin-only flex items-center px-4 py-2 rounded-lg" data-target="menu-management">
-                    <i class="fas fa-book-open w-6"></i><span>Manage Menus</span>
+                    <i class="fas fa-book-open w-6"></i><span>Manage Menu</span>
                 </a>
                 <a href="#" class="sidebar-link admin-only flex items-center px-4 py-2 rounded-lg" data-target="stock-management">
                     <i class="fas fa-boxes-stacked w-6"></i><span>Manage Stock</span>
@@ -88,144 +123,158 @@
                     <i class="fas fa-users w-6"></i><span>Manage Staff</span>
                 </a>
                  <a href="#" id="signOutBtn" class="sidebar-link flex items-center px-4 py-2 rounded-lg mt-auto mb-4">
-                    <i class="fas fa-sign-out-alt w-6"></i><span>Sign Out</span>
+                    <i class="fas fa-sign-out-alt w-6"></i><span>Log Out</span>
                 </a>
                 <div class="px-4 py-2 mt-4 text-xs text-gray-400 border-t border-gray-700">
-                     User Role: <span id="userRoleDisplay" class="font-mono font-bold"></span><br>
-                     User ID: <span id="userIdDisplay" class="font-mono"></span>
+                      User Role: <span id="userRoleDisplay" class="font-mono font-bold"></span><br>
+                      User ID: <span id="userIdDisplay" class="font-mono"></span>
                 </div>
             </nav>
         </div>
 
-        <main class="flex-1 p-6 lg:p-10 overflow-auto">
-            <section id="dashboard" class="content-section active">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6">Daily Report</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-gray-500 text-sm font-medium">Total Revenue</h3>
-                        <p id="totalRevenue" class="text-3xl font-bold text-indigo-600">$0.00</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-gray-500 text-sm font-medium">Total Orders</h3>
-                        <p id="totalOrders" class="text-3xl font-bold text-indigo-600">0</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-gray-500 text-sm font-medium">Low Stock Items</h3>
-                        <p id="lowStockItems" class="text-3xl font-bold text-red-500">0</p>
-                    </div>
-                     <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-gray-500 text-sm font-medium">Most Popular Item</h3>
-                        <p id="popularItem" class="text-xl font-bold text-indigo-600">-</p>
-                    </div>
-                </div>
-                <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">Today's Orders</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="bg-gray-50 border-b">
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Time</th>
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Items</th>
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dailyOrdersTable">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+        <!-- Sidebar Overlay (mobile only) -->
+        <div id="sidebar-overlay"></div>
 
-            <section id="take-order" class="content-section">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6">Take Order</h1>
-                <div class="flex flex-col lg:flex-row gap-6">
-                    <div id="orderMenuGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 flex-1">
-                    </div>
-                    <div class="w-full lg:w-1/3">
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-auto">
+            <!-- Header (mobile only) -->
+            <header class="lg:hidden bg-white shadow-md p-4 flex items-center flex-shrink-0">
+                <button id="openSidebarBtn" class="text-gray-600 text-2xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="text-xl font-bold text-gray-800 ml-4">Lisa-CafeManager</h1>
+            </header>
+            
+            <div class="p-6 lg:p-10 flex-1">
+                <section id="dashboard" class="content-section active">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Daily Report</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h2 class="text-xl font-bold mb-4">Current Order</h2>
-                            <div id="currentOrderList" class="space-y-2">
-                            </div>
-                            <div class="border-t mt-4 pt-4">
-                                <div class="flex justify-between font-bold text-lg">
-                                    <span>Total:</span>
-                                    <span id="orderTotal">$0.00</span>
+                            <h3 class="text-gray-500 text-sm font-medium">Total Revenue</h3>
+                            <p id="totalRevenue" class="text-3xl font-bold text-indigo-600">$0.00</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-gray-500 text-sm font-medium">Total Orders</h3>
+                            <p id="totalOrders" class="text-3xl font-bold text-indigo-600">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-gray-500 text-sm font-medium">Low Stock Items</h3>
+                            <p id="lowStockItems" class="text-3xl font-bold text-red-500">0</p>
+                        </div>
+                         <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-gray-500 text-sm font-medium">On Trend Item</h3>
+                            <p id="popularItem" class="text-xl font-bold text-indigo-600">-</p>
+                        </div>
+                    </div>
+                    <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Today's Orders</h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b">
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Time</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Items</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dailyOrdersTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="take-order" class="content-section">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Take Order</h1>
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <div id="orderMenuGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 flex-1">
+                        </div>
+                        <div class="w-full lg:w-1/3">
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-xl font-bold mb-4">Current Order</h2>
+                                <div id="currentOrderList" class="space-y-2">
                                 </div>
-                                <button id="placeOrderBtn" class="w-full bg-green-500 text-white py-2 rounded-lg mt-4 hover:bg-green-600 disabled:bg-gray-400">Place Order</button>
+                                <div class="border-t mt-4 pt-4">
+                                    <div class="flex justify-between font-bold text-lg">
+                                        <span>Total:</span>
+                                        <span id="orderTotal">$0.00</span>
+                                    </div>
+                                    <button id="placeOrderBtn" class="w-full bg-green-500 text-white py-2 rounded-lg mt-4 hover:bg-green-600 disabled:bg-gray-400">Place Order</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <section id="menu-management" class="content-section admin-only">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Manage Menus</h1>
-                    <button id="addMenuBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Add Menu Item</button>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="bg-gray-50 border-b">
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Name</th>
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Price</th>
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Category</th>
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="menuTable">
-                            </tbody>
-                        </table>
+                <section id="menu-management" class="content-section admin-only">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-gray-800">Manage Menu</h1>
+                        <button id="addMenuBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Add New Menu Item</button>
                     </div>
-                </div>
-            </section>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                         <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b">
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Name</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Price</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Category</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="menuTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
 
-            <section id="stock-management" class="content-section admin-only">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Manage Stock</h1>
-                    <button id="addStockBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Add Stock Item</button>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="bg-gray-50 border-b">
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Item Name</th>
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Quantity</th>
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Unit</th>
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="stockTable">
-                            </tbody>
-                        </table>
+                <section id="stock-management" class="content-section admin-only">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-gray-800">Manage Stock</h1>
+                        <button id="addStockBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Add Stock Item</button>
                     </div>
-                </div>
-            </section>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                         <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b">
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Item Name</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Quantity</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Unit</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stockTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
 
-            <section id="staff-management" class="content-section admin-only">
-                 <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Manage Staff</h1>
-                    <button id="addStaffBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Add Staff Member</button>
-                </div>
-                 <div class="bg-white p-6 rounded-lg shadow-md">
-                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="bg-gray-50 border-b">
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Name</th>
-                                     <th class="p-4 text-sm font-semibold text-gray-600">Email</th>
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Role</th>
-                                    <th class="p-4 text-sm font-semibold text-gray-600">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="staffTable">
-                            </tbody>
-                        </table>
+                <section id="staff-management" class="content-section admin-only">
+                     <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-gray-800">Manage Staff</h1>
+                        <!-- <button id="addStaffBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Add Staff Member</button> -->
                     </div>
-                </div>
-            </section>
+                     <div class="bg-white p-6 rounded-lg shadow-md">
+                         <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b">
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Name</th>
+                                         <th class="p-4 text-sm font-semibold text-gray-600">Email</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Role</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staffTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
 
@@ -257,7 +306,7 @@
                         <div class="flex-1">
                             <label for="stockItemSelect" class="block text-sm font-medium text-gray-700">Stock Item</label>
                             <select id="stockItemSelect" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                                </select>
+                            </select>
                         </div>
                         <div class="w-1/4">
                              <label for="ingredientQuantity" class="block text-sm font-medium text-gray-700">Quantity</label>
@@ -266,7 +315,7 @@
                         <button type="button" id="addIngredientBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Add</button>
                     </div>
                     <div id="recipeIngredientsList" class="space-y-2 p-2 border rounded-md bg-gray-50 min-h-[50px]">
-                        </div>
+                    </div>
                 </div>
 
                 <div class="flex justify-end space-x-4 mt-8">
@@ -284,15 +333,15 @@
                 <input type="hidden" id="stockId">
                 <div class="mb-4">
                     <label for="stockName" class="block text-sm font-medium text-gray-700">Item Name</label>
-                    <input type="text" id="stockName" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="text" id="stockName" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
                 </div>
                 <div class="mb-4">
                     <label for="stockQuantity" class="block text-sm font-medium text-gray-700">Quantity</label>
-                    <input type="number" id="stockQuantity" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="number" id="stockQuantity" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
                 </div>
                 <div class="mb-6">
                     <label for="stockUnit" class="block text-sm font-medium text-gray-700">Unit</label>
-                    <input type="text" id="stockUnit" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., kg, liters, units" required>
+                    <input type="text" id="stockUnit" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="e.g., kg, liters, units" required>
                 </div>
                 <div class="flex justify-end space-x-4">
                     <button type="button" id="closeStockModal" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400">Cancel</button>
@@ -309,20 +358,20 @@
                 <input type="hidden" id="staffId">
                  <div class="mb-4">
                     <label for="staffName" class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" id="staffName" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <input type="text" id="staffName" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
                 </div>
                 <div class="mb-4">
                     <label for="staffEmail" class="block text-sm font-medium text-gray-700">Email (for login)</label>
-                    <input type="email" id="staffEmail" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="user@example.com" required>
+                    <input type="email" id="staffEmail" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="user@example.com" required>
                 </div>
                 <div class="mb-6">
                     <label for="staffRole" class="block text-sm font-medium text-gray-700">Role</label>
-                    <select id="staffRole" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <select id="staffRole" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
                         <option value="staff">Staff</option>
                         <option value="admin">Admin</option>
                     </select>
                 </div>
-                <p class="text-sm text-gray-500 mb-4">Note: You must create the user with an email and password in the Firebase Authentication console first. Then, add their details here.</p>
+                <p class="text-sm text-gray-500 mb-4">Note: You must create the user with an email and password in the Firebase Authentication console first.</p>
                 <div class="flex justify-end space-x-4">
                     <button type="button" id="closeStaffModal" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400">Cancel</button>
                     <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Save Member</button>
@@ -366,15 +415,11 @@
         let userRole = null;
         let unsubscribeListeners = [];
         let currentOrder = [];
-        let currentRecipe = []; // State for the recipe builder
+        let currentRecipe = [];
 
         // --- UI Elements ---
         const loginScreen = document.getElementById('login-screen');
         const appContainer = document.getElementById('app-container');
-        const loginForm = document.getElementById('loginForm');
-        const loginError = document.getElementById('loginError');
-        const signOutBtn = document.getElementById('signOutBtn');
-        const sidebarLinks = document.querySelectorAll('.sidebar-link');
         const contentSections = document.querySelectorAll('.content-section');
         const alertModal = document.getElementById('alertModal');
         const alertMessage = document.getElementById('alertMessage');
@@ -391,7 +436,7 @@
         const lowStockItemsEl = document.getElementById('lowStockItems');
         const popularItemEl = document.getElementById('popularItem');
 
-        // --- Modal UI Elements ---
+        // --- Modal UI ---
         const menuModal = document.getElementById('menuModal');
         const stockModal = document.getElementById('stockModal');
         const staffModal = document.getElementById('staffModal');
@@ -399,53 +444,76 @@
         const stockForm = document.getElementById('stockForm');
         const staffForm = document.getElementById('staffForm');
 
-        // --- Recipe Builder UI Elements ---
+        // --- Recipe Builder UI ---
         const addIngredientBtn = document.getElementById('addIngredientBtn');
         const stockItemSelect = document.getElementById('stockItemSelect');
         const ingredientQuantityInput = document.getElementById('ingredientQuantity');
         const recipeIngredientsList = document.getElementById('recipeIngredientsList');
 
-        // --- Utility Functions ---
+        // --- Mobile Nav UI ---
+        const sidebar = document.getElementById('sidebar');
+        const openSidebarBtn = document.getElementById('openSidebarBtn');
+        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        // --- Mobile Nav Logic ---
+        const openSidebar = () => {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('open');
+        };
+        const closeSidebar = () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+        };
+        openSidebarBtn.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+        
+        // --- Utility ---
         const showAlert = (message) => {
             alertMessage.textContent = message;
             alertModal.classList.add('flex');
         };
 
         // --- Navigation ---
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
         sidebarLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                if (link.id === 'signOutBtn') return;
                 const targetId = link.getAttribute('data-target');
+                if (link.id === 'signOutBtn') {
+                    signOut(auth);
+                    closeSidebar();
+                    return;
+                }
                 sidebarLinks.forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
                 contentSections.forEach(section => {
                     section.classList.remove('active');
                     if (section.id === targetId) section.classList.add('active');
                 });
+                if (window.innerWidth < 1024) closeSidebar();
             });
         });
 
-        // --- Modal Handling ---
+        // --- Generic Modal Handling ---
         const setupModal = (modal, openBtnId, closeBtnId, form) => {
             const openBtn = document.getElementById(openBtnId);
             const closeBtn = document.getElementById(closeBtnId);
             if (openBtn) openBtn.addEventListener('click', () => {
                 form.reset();
-                const idField = form.querySelector('input[type="hidden"]');
-                if (idField) idField.value = '';
+                form.querySelector('input[type="hidden"]')?.setAttribute('value', '');
                 modal.classList.add('flex');
             });
             if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.remove('flex'));
         };
-        // Note: Menu modal is now handled by custom listeners, not this generic function.
         setupModal(stockModal, 'addStockBtn', 'closeStockModal', stockForm);
         setupModal(staffModal, 'addStaffBtn', 'closeStaffModal', staffForm);
         document.getElementById('closeAlertModal').addEventListener('click', () => alertModal.classList.remove('flex'));
 
-        // --- Firestore Collections ---
-        const getCollectionRef = (collectionName) => collection(db, `artifacts/${appId}/public/data/${collectionName}`);
-        const getDocRef = (collectionName, docId) => doc(db, `artifacts/${appId}/public/data/${collectionName}`, docId);
+        // --- Firestore ---
+        const getCollectionRef = (name) => collection(db, `artifacts/${appId}/public/data/${name}`);
+        const getDocRef = (coll, id) => doc(db, `artifacts/${appId}/public/data/${coll}`, id);
 
         // --- Authentication ---
         onAuthStateChanged(auth, async (user) => {
@@ -455,14 +523,14 @@
                 userId = user.uid;
                 userRole = await fetchUserRole(userId);
                 if(userRole) {
-                    document.getElementById('userIdDisplay').textContent = userId;
+                    document.getElementById('userIdDisplay').textContent = userId.substring(0, 8);
                     document.getElementById('userRoleDisplay').textContent = userRole;
                     updateUIVisibility(userRole);
                     loginScreen.style.display = 'none';
                     appContainer.style.display = 'flex';
                     initializeAppFunctions();
                 } else {
-                    showAlert("Could not verify your user role. Please contact an admin.");
+                    showAlert("User role not found. Please contact an admin.");
                     await signOut(auth);
                 }
             } else {
@@ -478,61 +546,66 @@
             try {
                 const docSnap = await getDoc(getDocRef('users', uid));
                 return docSnap.exists() ? docSnap.data().role : null;
-            } catch (error) {
-                console.error("Error fetching user role:", error);
-                return null;
-            }
+            } catch (error) { return null; }
         }
         
+        // --- [FIXED] This function no longer incorrectly applies display styles to content sections ---
         function updateUIVisibility(role) {
-            const adminLinks = document.querySelectorAll('.sidebar-link.admin-only');
-            const adminSections = document.querySelectorAll('.content-section.admin-only');
-            if (role === 'admin') {
-                adminLinks.forEach(el => el.style.display = 'flex');
-                adminSections.forEach(el => el.style.display = '');
-            } else {
-                adminLinks.forEach(el => el.style.display = 'none');
-                adminSections.forEach(el => el.style.display = 'none');
+            // Handle visibility of admin-only UI elements based on user role
+            document.querySelectorAll('.admin-only').forEach(el => {
+                const isContentSection = el.classList.contains('content-section');
+                
+                if (isContentSection) {
+                    // For content sections, we DON'T manage display style here. That's for the navigation logic.
+                    // We only need to handle the case where a non-admin is on an admin page.
+                    if (role !== 'admin' && el.classList.contains('active')) {
+                        el.classList.remove('active');
+                        document.querySelector('.sidebar-link[data-target="dashboard"]').click();
+                    }
+                } else {
+                    // For other elements (like sidebar links), set their display property.
+                    const isLink = el.classList.contains('sidebar-link');
+                    el.style.display = role === 'admin' ? (isLink ? 'flex' : 'block') : 'none';
+                }
+            });
+
+            // Fallback: If a non-admin ends up with no active section, send them to the dashboard.
+            if (role !== 'admin' && !document.querySelector('.content-section.active')) {
+                const dashboardLink = document.querySelector('.sidebar-link[data-target="dashboard"]');
+                if (dashboardLink) {
+                    dashboardLink.click();
+                }
             }
         }
         
         function resetUI() {
-            menuTable.innerHTML = '';
-            stockTable.innerHTML = '';
-            staffTable.innerHTML = '';
-            dailyOrdersTable.innerHTML = '';
-            orderMenuGrid.innerHTML = '';
+            [menuTable, stockTable, staffTable, dailyOrdersTable, orderMenuGrid].forEach(el => el.innerHTML = '');
             totalRevenueEl.textContent = '$0.00';
             totalOrdersEl.textContent = '0';
             lowStockItemsEl.textContent = '0';
             popularItemEl.textContent = '-';
         }
 
-        loginForm.addEventListener('submit', async (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            loginError.textContent = '';
+            document.getElementById('loginError').textContent = '';
             try {
-                await signInWithEmailAndPassword(auth, email.value, password.value);
+                await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
             } catch (error) {
-                loginError.textContent = "Invalid email or password.";
+                document.getElementById('loginError').textContent = "Invalid email or password.";
             }
         });
-        
-        signOutBtn.addEventListener('click', () => signOut(auth));
 
-        // --- App Initialization ---
         function initializeAppFunctions() {
             if (!userRole || !userId) return;
             setupMenuListener();
             setupStockListener();
             setupOrderListener();
             renderOrderMenu();
-            if(userRole === 'admin') {
-                setupStaffListener();
-            }
+            if(userRole === 'admin') setupStaffListener();
         }
 
-        // --- Recipe Builder Logic ---
+        // --- Recipe Builder ---
         async function populateStockDropdown() {
             stockItemSelect.innerHTML = '<option value="">Select an ingredient...</option>';
             const stockSnapshot = await getDocs(getCollectionRef('stock'));
@@ -586,7 +659,7 @@
             }
         });
 
-        // --- Menu Management (with Recipe Builder Integration) ---
+        // --- Menu Management ---
         function setupMenuListener() {
             const unsub = onSnapshot(getCollectionRef('menus'), (snapshot) => {
                 menuTable.innerHTML = '';
@@ -734,7 +807,7 @@
         staffForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('staffId').value; 
-            const data = { name: staffName.value, email: staffEmail.value, role: staffRole.value };
+            const data = { name: document.getElementById('staffName').value, email: document.getElementById('staffEmail').value, role: document.getElementById('staffRole').value };
             if (!id) {
                 showAlert("For new staff, use an edit button or manage UIDs in Firestore.");
                 return;
@@ -759,11 +832,11 @@
                  const itemDoc = await getDoc(getDocRef('users', id));
                 if (itemDoc.exists()) {
                     const item = itemDoc.data();
-                    staffId.value = id;
-                    staffName.value = item.name;
-                    staffEmail.value = item.email;
-                    staffRole.value = item.role;
-                    staffModalTitle.textContent = 'Edit Staff Member';
+                    document.getElementById('staffId').value = id;
+                    document.getElementById('staffName').value = item.name;
+                    document.getElementById('staffEmail').value = item.email;
+                    document.getElementById('staffRole').value = item.role;
+                    document.getElementById('staffModalTitle').textContent = 'Edit Staff Member';
                     staffModal.classList.add('flex');
                 }
             }
@@ -816,87 +889,51 @@
             }
         });
 
-        // =======================================================================
-        // CRITICAL FIX: RESTRUCTURED TRANSACTION LOGIC
-        // =======================================================================
         placeOrderBtn.addEventListener('click', async () => {
             if (currentOrder.length === 0) return;
-
             placeOrderBtn.disabled = true;
             placeOrderBtn.textContent = 'Placing Order...';
-
             try {
                 await runTransaction(db, async (transaction) => {
-                    // --- PHASE 1: ALL READS ---
-                    // Get all menu item data to compile a list of required stock ingredients
+                    // Phase 1: Reads
                     const menuRefs = currentOrder.map(item => getDocRef('menus', item.id));
                     const menuSnaps = await Promise.all(menuRefs.map(ref => transaction.get(ref)));
-                    
-                    const requiredStock = new Map(); // Key: stockId, Value: { required: amount, name: 'Milk' }
-
+                    const requiredStock = new Map();
                     for (let i = 0; i < currentOrder.length; i++) {
                         const orderItem = currentOrder[i];
                         const menuSnap = menuSnaps[i];
-                        if (!menuSnap.exists() || !menuSnap.data().recipe) {
-                            throw new Error(`Recipe not found for ${orderItem.name}.`);
-                        }
-                        
+                        if (!menuSnap.exists() || !menuSnap.data().recipe) throw new Error(`Recipe for ${orderItem.name} not found.`);
                         for (const ingredient of menuSnap.data().recipe) {
                             const deduction = ingredient.quantity * orderItem.quantity;
                             const existing = requiredStock.get(ingredient.stockId) || { required: 0, name: ingredient.name };
-                            requiredStock.set(ingredient.stockId, {
-                                required: existing.required + deduction,
-                                name: existing.name
-                            });
+                            requiredStock.set(ingredient.stockId, { required: existing.required + deduction, name: existing.name });
                         }
                     }
-
-                    // Get all required stock item data
                     const stockRefs = Array.from(requiredStock.keys()).map(id => getDocRef('stock', id));
-                    const stockSnaps = await Promise.all(stockRefs.map(ref => transaction.get(ref)));
+                    const stockSnaps = stockRefs.length ? await Promise.all(stockRefs.map(ref => transaction.get(ref))) : [];
                     const stockData = new Map();
                     stockSnaps.forEach(snap => {
-                        if (snap.exists()) {
-                            stockData.set(snap.id, { ref: snap.ref, currentQuantity: snap.data().quantity, name: snap.data().name });
-                        }
+                        if (snap.exists()) stockData.set(snap.id, { ref: snap.ref, currentQuantity: snap.data().quantity, name: snap.data().name });
                     });
-
-                    // --- PHASE 2: VALIDATION (IN MEMORY) ---
+                    // Phase 2: Validation
                     for (const [stockId, req] of requiredStock.entries()) {
                         const stock = stockData.get(stockId);
-                        if (!stock) {
-                            throw new Error(`Stock item "${req.name}" (${stockId}) not found in database.`);
-                        }
-                        if (stock.currentQuantity < req.required) {
-                            throw new Error(`Not enough stock for ${stock.name}. Required: ${req.required}, Available: ${stock.currentQuantity}.`);
-                        }
+                        if (!stock) throw new Error(`Stock item "${req.name}" not found.`);
+                        if (stock.currentQuantity < req.required) throw new Error(`Not enough stock for ${stock.name}.`);
                     }
-
-                    // --- PHASE 3: ALL WRITES ---
-                    // If all validations pass, perform all writes
+                    // Phase 3: Writes
                     for (const [stockId, req] of requiredStock.entries()) {
                         const stock = stockData.get(stockId);
-                        const newQuantity = stock.currentQuantity - req.required;
-                        transaction.update(stock.ref, { quantity: newQuantity });
+                        transaction.update(stock.ref, { quantity: stock.currentQuantity - req.required });
                     }
-
                     const total = currentOrder.reduce((sum, item) => sum + item.price * item.quantity, 0);
-                    const orderData = {
-                        items: currentOrder.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
-                        total,
-                        timestamp: Timestamp.now()
-                    };
-                    const newOrderRef = doc(getCollectionRef('orders'));
-                    transaction.set(newOrderRef, orderData);
+                    const orderData = { items: currentOrder.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })), total, timestamp: Timestamp.now() };
+                    transaction.set(doc(getCollectionRef('orders')), orderData);
                 });
-
-                // If transaction is successful
-                showAlert('Order placed and stock updated successfully!');
+                showAlert('Order placed successfully!');
                 currentOrder = [];
                 updateCurrentOrderDisplay();
-
             } catch (error) {
-                console.error("Order failed during transaction:", error);
                 showAlert(`Order failed: ${error.message}`);
             } finally {
                 placeOrderBtn.disabled = false;
