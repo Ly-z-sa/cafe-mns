@@ -10,19 +10,147 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background: linear-gradient(120deg, #f6f8fc 0%, #f0f4f9 100%);
+            min-height: 100vh;
         }
         .sidebar-link {
-            transition: background-color 0.2s, color 0.2s;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            border-radius: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            letter-spacing: 0.01em;
+            padding: 0.9rem 1.2rem;
         }
         .sidebar-link.active, .sidebar-link:hover {
-            background-color: #4f46e5;
-            color: white;
+            background: linear-gradient(90deg, #ffb86b 0%, #ff7e5f 100%);
+            color: #fff;
+            box-shadow: 0 4px 16px 0 rgba(255,186,107,0.15);
         }
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            background: linear-gradient(120deg, #ffb86b 0%, #ff7e5f 100%);
+            border-radius: 1.5rem;
+            padding: 1.2rem 1.2rem 1.2rem 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 24px 0 rgba(255,186,107,0.13);
+        }
+        .sidebar-logo img {
+            width: 48px;
+            height: 48px;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 16px 0 rgba(99,102,241,0.12);
+            border: 2px solid #fff;
+            background: #fff;
+        }
+        .sidebar-logo h2 {
+            font-size: 1.7rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            color: #fff;
+            margin-bottom: 0.1rem;
+            text-shadow: 0 2px 8px rgba(255,126,95,0.13);
+        }
+        .sidebar-logo p {
+            font-size: 1rem;
+            color: #fffbe6;
+            font-weight: 500;
+        }
+
+        /* Modern Card Styles */
+        .card-glass {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(255,184,107,0.18), 0 1.5px 8px 0 rgba(255,126,95,0.10);
+            padding: 2.5rem 2rem 2rem 2rem;
+            border: 1.5px solid #ffe0c2;
+            backdrop-filter: blur(4px);
+            transition: transform 0.15s, box-shadow 0.15s;
+            min-height: 180px;
+        }
+        .card-glass:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 12px 36px 0 rgba(255,184,107,0.22), 0 2px 12px 0 rgba(255,126,95,0.13);
+        }
+        .card-title {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            font-size: 1.18rem;
+            font-weight: 800;
+            color: #ff7e5f;
+            letter-spacing: 0.01em;
+            margin-bottom: 0.7rem;
+            text-shadow: 0 1px 8px #ffe0c2;
+            text-transform: uppercase;
+        }
+        .card-value {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            font-size: 2.7rem;
+            font-weight: 900;
+            color: #ffb86b;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 12px #ffe0c2, 0 1px 2px #ff7e5f22;
+            margin-top: 0.2rem;
+        }
+        
+        /* --- Section Visibility Fix --- */
         .content-section {
-            display: none;
+            display: none !important;
+            position: relative;
+            z-index: 1;
         }
         .content-section.active {
-            display: block;
+            display: block !important;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Mobile Header Bar --- */
+        @media (max-width: 1024px) {
+            #headerBar {
+                flex-wrap: wrap;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            #headerNav {
+                position: absolute;
+                left: 0;
+                top: 100%;
+                width: 100vw;
+                min-width: 0;
+                border-radius: 0 0 1.5rem 1.5rem;
+                box-shadow: 0 8px 32px 0 rgba(255,186,107,0.10);
+                flex-direction: column !important;
+                align-items: flex-start;
+                gap: 0.5rem;
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                display: none;
+                background: rgba(255,255,255,0.97);
+                z-index: 100;
+                transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1);
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+            #headerNav.open {
+                display: flex !important;
+            }
+            #headerNav .header-link {
+                display: block;
+                width: 100%;
+                padding: 1rem 1.2rem;
+                font-size: 1.15rem;
+                border-radius: 1rem;
+                margin-bottom: 0.2rem;
+                text-align: left;
+            }
+            #headerNav .header-link:last-child {
+                margin-bottom: 0;
+            }
         }
         .modal {
             display: none;
@@ -41,7 +169,64 @@
             display: flex;
         }
         .admin-only { display: none; }
-
+        /* Table improvements */
+        table {
+            border-radius: 1.5rem;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 2px 12px 0 rgba(255,186,107,0.07);
+        }
+        thead tr {
+            background: #ffe0c2;
+        }
+        tbody tr:nth-child(even) {
+            background: #fff6ed;
+        }
+        tbody tr {
+            transition: background 0.2s;
+        }
+        tbody tr:hover {
+            background: #ffd6b0;
+        }
+        th, td {
+            padding: 1.1rem 1.2rem !important;
+        }
+        /* Card/section improvements */
+        .bg-white {
+            border-radius: 1.5rem !important;
+            box-shadow: 0 8px 32px 0 rgba(255,186,107,0.10);
+        }
+        /* Button improvements */
+        button, .btn {
+            border-radius: 1.2rem !important;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0.7rem 1.5rem;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            box-shadow: 0 2px 8px 0 rgba(255,186,107,0.10);
+        }
+        button:focus {
+            outline: 2px solid #ff7e5f;
+            outline-offset: 2px;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 24px 0 rgba(255,186,107,0.13);
+        }
+        /* Inputs */
+        input, select, textarea {
+            border-radius: 0.9rem !important;
+            font-size: 1.05rem;
+            padding: 0.7rem 1.1rem;
+            border: 1.5px solid #ffd6b0;
+            background: #fffaf6;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border: 1.5px solid #ff7e5f;
+            box-shadow: 0 2px 8px 0 rgba(255,186,107,0.10);
+            background: #fff;
+        }
         /* --- Mobile Responsive Styles --- */
         @media (max-width: 1024px) {
             #sidebar {
@@ -53,6 +238,7 @@
                 z-index: 100;
                 transform: translateX(-100%);
                 transition: transform 0.3s ease-in-out;
+                background: linear-gradient(135deg, #ffb86b 0%, #ff7e5f 100%);
             }
             #sidebar.open {
                 transform: translateX(0);
@@ -77,104 +263,108 @@
 
     <div id="login-screen" class="flex items-center justify-center h-screen bg-gray-200">
         <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-            <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">lisa-cafemanager</h2>
-            <p class="text-center text-gray-500 mb-8">Log in to your account</p>
-            <form id="loginForm">
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                    <input type="email" id="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-                <div class="mb-6">
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" id="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Log In</button>
-                 <p id="loginError" class="text-red-500 text-sm mt-4 text-center"></p>
-            </form>
+            <form id="loginForm" class="space-y-6">
+    <h2 class="text-2xl font-bold text-center mb-4">Cafe Login</h2>
+    <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+        <input id="email" name="email" type="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" autocomplete="username">
+    </div>
+    <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input id="password" name="password" type="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" autocomplete="current-password">
+    </div>
+    <div id="loginError" class="text-red-500 text-sm"></div>
+    <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">Sign In</button>
+</form>
         </div>
     </div>
 
     <!-- App Container -->
-    <div id="app-container" class="hidden lg:flex h-screen bg-gray-200">
-        <!-- Sidebar -->
-        <div id="sidebar" class="w-64 bg-gray-800 text-white flex-col flex-shrink-0 lg:flex">
-            <div class="px-8 py-6 border-b border-gray-700 flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-semibold">Lisa-CafeManager</h2>
-                    <p class="text-sm text-gray-400">A coffee a day keep depression away</p>
-                </div>
-                <!-- Close button (mobile only) -->
-                <button id="closeSidebarBtn" class="lg:hidden text-2xl text-gray-400 hover:text-white">&times;</button>
-            </div>
-            <nav class="flex-1 px-4 py-4 space-y-2">
-                <a href="#" class="sidebar-link active flex items-center px-4 py-2 rounded-lg" data-target="dashboard">
-                    <i class="fas fa-chart-line w-6"></i><span>Dashboard</span>
-                </a>
-                <a href="#" class="sidebar-link flex items-center px-4 py-2 rounded-lg" data-target="take-order">
-                    <i class="fas fa-cash-register w-6"></i><span>Take Order</span>
-                </a>
-                <a href="#" class="sidebar-link admin-only flex items-center px-4 py-2 rounded-lg" data-target="menu-management">
-                    <i class="fas fa-book-open w-6"></i><span>Manage Menu</span>
-                </a>
-                <a href="#" class="sidebar-link admin-only flex items-center px-4 py-2 rounded-lg" data-target="stock-management">
-                    <i class="fas fa-boxes-stacked w-6"></i><span>Manage Stock</span>
-                </a>
-                <a href="#" class="sidebar-link admin-only flex items-center px-4 py-2 rounded-lg" data-target="staff-management">
-                    <i class="fas fa-users w-6"></i><span>Manage Staff</span>
-                </a>
-                 <a href="#" id="signOutBtn" class="sidebar-link flex items-center px-4 py-2 rounded-lg mt-auto mb-4">
-                    <i class="fas fa-sign-out-alt w-6"></i><span>Log Out</span>
-                </a>
-                <div class="px-4 py-2 mt-4 text-xs text-gray-400 border-t border-gray-700">
-                      User Role: <span id="userRoleDisplay" class="font-mono font-bold"></span><br>
-                      User ID: <span id="userIdDisplay" class="font-mono"></span>
-                </div>
-            </nav>
-        </div>
-
-        <!-- Sidebar Overlay (mobile only) -->
-        <div id="sidebar-overlay"></div>
-
-        <!-- Main Content -->
+    <div id="app-container" class="flex flex-col min-h-screen hidden">
+        <!-- Header Bar (only visible after login) -->
+        <header id="headerBar" class="fixed top-0 left-0 w-full z-40 bg-white/70 backdrop-blur-md shadow-md flex items-center justify-between px-6 py-3 transition-all duration-300" style="backdrop-filter: blur(12px);">
+    <button id="mobileMenuBtn" class="lg:hidden flex items-center justify-center w-10 h-10 rounded-md hover:bg-gray-200 focus:outline-none mr-2" aria-label="Open menu">
+        <i class="fas fa-bars text-2xl text-gray-700"></i>
+    </button>
+    <nav id="headerNav" class="hidden absolute top-16 left-0 w-full bg-white/90 shadow-lg flex-col gap-2 px-4 py-4 z-50 rounded-b-2xl lg:static lg:flex lg:flex-row lg:items-center lg:gap-6 lg:bg-transparent lg:shadow-none lg:rounded-none lg:px-0 lg:py-0">
+        <a href="#" class="header-link font-bold text-xl text-[#ff7e5f] lg:!pl-0" data-target="dashboard">CafeMNS</a>
+        <a href="#" class="header-link" data-target="dashboard">Dashboard</a>
+        <a href="#" class="header-link" data-target="orders-section">Orders</a>
+        <a href="#" class="header-link" data-target="take-order">Take Order</a>
+        <a href="#" class="header-link admin-only" data-target="menu-management" style="display:none;">Menu</a>
+        <a href="#" class="header-link" data-target="stock-management">Stock</a>
+        <a href="#" class="header-link admin-only" data-target="staff-management" style="display:none;">Staff</a>
+        <a href="#" class="header-link admin-only" data-target="settings-section" style="display:none;">Settings</a>
+    </nav>
+    <div class="flex items-center gap-4">
+        <span class="text-sm text-gray-700 hidden md:inline">ID: <span id="userIdDisplay"></span></span>
+        <span class="text-sm text-gray-700 capitalize hidden md:inline">Role: <span id="userRoleDisplay"></span></span>
+        <a href="#" id="signOutBtn" class="header-link text-red-500 font-semibold">Sign Out</a>
+    </div>
+        
+</header>
+        <!-- Spacer for sticky header -->
+        <div style="height:64px;"></div>
         <main class="flex-1 flex flex-col overflow-auto">
-            <!-- Header (mobile only) -->
-            <header class="lg:hidden bg-white shadow-md p-4 flex items-center flex-shrink-0">
-                <button id="openSidebarBtn" class="text-gray-600 text-2xl">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 class="text-xl font-bold text-gray-800 ml-4">Lisa-CafeManager</h1>
-            </header>
-            
-            <div class="p-6 lg:p-10 flex-1">
-                <section id="dashboard" class="content-section active">
-                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Daily Report</h1>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-gray-500 text-sm font-medium">Total Revenue</h3>
-                            <p id="totalRevenue" class="text-3xl font-bold text-indigo-600">$0.00</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-gray-500 text-sm font-medium">Total Orders</h3>
-                            <p id="totalOrders" class="text-3xl font-bold text-indigo-600">0</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-gray-500 text-sm font-medium">Low Stock Items</h3>
-                            <p id="lowStockItems" class="text-3xl font-bold text-red-500">0</p>
-                        </div>
-                         <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-gray-500 text-sm font-medium">On Trend Item</h3>
-                            <p id="popularItem" class="text-xl font-bold text-indigo-600">-</p>
+            <div class="p-6 lg:p-12 flex-1">
+                <section id="orders-section" class="content-section">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-gray-800">Orders In Progress</h1>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left" id="ordersTable">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="p-3">Time</th>
+                                        <th class="p-3">Customer</th>
+                                        <th class="p-3">Items</th>
+                                        <th class="p-3">Total</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody"></tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4">Today's Orders</h2>
+                </section>
+        
+                <section id="dashboard" class="content-section active">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                        <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight mb-4 md:mb-0">Daily Report</h1>
+                        <div class="flex gap-2 items-center">
+                            <input type="date" id="reportDatePicker" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ffb86b]" />
+                            <button id="downloadReportBtn" class="bg-[#ffb86b] hover:bg-[#ff7e5f] text-white font-bold px-4 py-2 rounded-lg transition-colors">Download Report</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="card-glass flex flex-col items-center">
+                            <h3 class="card-title">Total Revenue</h3>
+                            <p id="totalRevenue" class="card-value">$0.00</p>
+                        </div>
+                        <div class="card-glass flex flex-col items-center">
+                            <h3 class="card-title">Total Orders</h3>
+                            <p id="totalOrders" class="card-value">0</p>
+                        </div>
+                        <div class="card-glass flex flex-col items-center">
+                            <h3 class="card-title">Low Stock Items</h3>
+                            <p id="lowStockItems" class="card-value text-red-500">0</p>
+                        </div>
+                        <div class="card-glass flex flex-col items-center">
+                            <h3 class="card-title">On Trend Item</h3>
+                            <p id="popularItem" class="card-value text-2xl font-bold text-indigo-600">-</p>
+                        </div>
+                    </div>
+                    <div class="mt-10 bg-white p-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Today's Orders</h2>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead>
                                     <tr class="bg-gray-50 border-b">
-                                        <th class="p-4 text-sm font-semibold text-gray-600">Time</th>
-                                        <th class="p-4 text-sm font-semibold text-gray-600">Items</th>
-                                        <th class="p-4 text-sm font-semibold text-gray-600">Total</th>
+                                        <th class="p-4 text-base font-semibold text-gray-600">Time</th>
+                                        <th class="p-4 text-base font-semibold text-gray-600">Items</th>
+                                        <th class="p-4 text-base font-semibold text-gray-600">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody id="dailyOrdersTable">
@@ -192,15 +382,33 @@
                         <div class="w-full lg:w-1/3">
                             <div class="bg-white p-6 rounded-lg shadow-md">
                                 <h2 class="text-xl font-bold mb-4">Current Order</h2>
-                                <div id="currentOrderList" class="space-y-2">
-                                </div>
-                                <div class="border-t mt-4 pt-4">
-                                    <div class="flex justify-between font-bold text-lg">
-                                        <span>Total:</span>
-                                        <span id="orderTotal">$0.00</span>
+                                <form id="takeOrderForm">
+                                    <div class="mb-3">
+                                        <label for="customerName" class="block text-sm font-medium text-gray-700">Customer Name</label>
+                                        <input type="text" id="customerName" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="Optional">
                                     </div>
-                                    <button id="placeOrderBtn" class="w-full bg-green-500 text-white py-2 rounded-lg mt-4 hover:bg-green-600 disabled:bg-gray-400">Place Order</button>
-                                </div>
+                                    <div class="mb-3">
+                                        <label for="couponCode" class="block text-sm font-medium text-gray-700">Coupon Code</label>
+                                        <input type="text" id="couponCode" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="Enter coupon if any">
+                                        <p id="couponFeedback" class="text-xs mt-1"></p>
+                                    </div>
+                                    <div id="currentOrderList" class="space-y-2 mb-2"></div>
+                                    <div class="border-t mt-4 pt-4">
+                                        <div class="flex justify-between font-bold text-lg">
+                                            <span>Subtotal:</span>
+                                            <span id="orderSubtotal">$0.00</span>
+                                        </div>
+                                        <div id="discountRow" class="flex justify-between text-green-600 font-semibold text-base mt-1" style="display:none;">
+                                            <span>Discount:</span>
+                                            <span id="orderDiscount">-$0.00</span>
+                                        </div>
+                                        <div class="flex justify-between font-bold text-lg mt-1">
+                                            <span>Total:</span>
+                                            <span id="orderTotal">$0.00</span>
+                                        </div>
+                                        <button id="placeOrderBtn" type="submit" class="w-full bg-green-500 text-white py-2 rounded-lg mt-4 hover:bg-green-600 disabled:bg-gray-400">Place Order</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -229,10 +437,10 @@
                     </div>
                 </section>
 
-                <section id="stock-management" class="content-section admin-only">
+                <section id="stock-management" class="content-section">
                     <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-3xl font-bold text-gray-800">Manage Stock</h1>
-                        <button id="addStockBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Add Stock Item</button>
+                        <h1 class="text-3xl font-bold text-gray-800">Stock</h1>
+                        <button id="addStockBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 admin-only" style="display: none;">Add Stock Item</button>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                          <div class="overflow-x-auto">
@@ -242,7 +450,7 @@
                                         <th class="p-4 text-sm font-semibold text-gray-600">Item Name</th>
                                         <th class="p-4 text-sm font-semibold text-gray-600">Quantity</th>
                                         <th class="p-4 text-sm font-semibold text-gray-600">Unit</th>
-                                        <th class="p-4 text-sm font-semibold text-gray-600">Actions</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600 admin-only" style="display: none;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="stockTable">
@@ -273,6 +481,57 @@
                             </table>
                         </div>
                     </div>
+                </section>
+                <section id="settings-section" class="content-section admin-only">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-gray-800">Settings</h1>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold mb-4">Manage Coupons</h2>
+                        <form id="couponForm" class="flex flex-col sm:flex-row flex-wrap gap-4 mb-6">
+                            <input type="hidden" id="couponId">
+                            <input type="text" id="couponCodeInput" class="border rounded px-3 py-2 flex-1 min-w-[120px]" placeholder="Code (e.g. LISA)" required>
+                            <select id="couponTypeInput" class="border rounded px-3 py-2 flex-1 min-w-[120px]" required>
+                                <option value="percent">Percent (%)</option>
+                                <option value="amount">Amount ($)</option>
+                            </select>
+                            <input type="number" id="couponValueInput" class="border rounded px-3 py-2 flex-1 min-w-[100px]" placeholder="Value" required>
+                            <input type="number" id="couponMaxDiscountInput" class="border rounded px-3 py-2 flex-1 min-w-[120px]" placeholder="Max Discount ($, optional)">
+                            <input type="text" id="couponLabelInput" class="border rounded px-3 py-2 flex-1 min-w-[140px]" placeholder="Label (e.g. 50% Off)" required>
+                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex-shrink-0">Save</button>
+                            <button type="button" id="cancelCouponEdit" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 flex-shrink-0">Cancel</button>
+                        </form>
+                        <div class="overflow-x-auto" style="max-width:100vw;">
+                            <table class="min-w-[600px] w-full text-left" id="couponTable">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="p-3">Code</th>
+                                        <th class="p-3">Type</th>
+                                        <th class="p-3">Value</th>
+                                        <th class="p-3">Max Discount</th>
+                                        <th class="p-3">Label</th>
+                                        <th class="p-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="couponTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+</style>
+<style>
+    /* Responsive fix for coupon section */
+    @media (max-width: 640px) {
+        #settings-section form#couponForm {
+            flex-direction: column !important;
+        }
+        #settings-section .overflow-x-auto {
+            max-width: 100vw;
+        }
+        #settings-section table {
+            min-width: 500px;
+        }
+    }
+</style>
                 </section>
             </div>
         </main>
@@ -450,51 +709,103 @@
         const ingredientQuantityInput = document.getElementById('ingredientQuantity');
         const recipeIngredientsList = document.getElementById('recipeIngredientsList');
 
-        // --- Mobile Nav UI ---
-        const sidebar = document.getElementById('sidebar');
-        const openSidebarBtn = document.getElementById('openSidebarBtn');
-        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-        // --- Mobile Nav Logic ---
-        const openSidebar = () => {
-            sidebar.classList.add('open');
-            sidebarOverlay.classList.add('open');
-        };
-        const closeSidebar = () => {
-            sidebar.classList.remove('open');
-            sidebarOverlay.classList.remove('open');
-        };
-        openSidebarBtn.addEventListener('click', openSidebar);
-        closeSidebarBtn.addEventListener('click', closeSidebar);
-        sidebarOverlay.addEventListener('click', closeSidebar);
         
         // --- Utility ---
         const showAlert = (message) => {
             alertMessage.textContent = message;
             alertModal.classList.add('flex');
         };
-
-        // --- Navigation ---
-        const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('data-target');
-                if (link.id === 'signOutBtn') {
-                    signOut(auth);
-                    closeSidebar();
-                    return;
-                }
-                sidebarLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                contentSections.forEach(section => {
-                    section.classList.remove('active');
-                    if (section.id === targetId) section.classList.add('active');
+        // --- Orders Screen Logic ---
+        const ordersTableBody = document.getElementById('ordersTableBody');
+        function setupOrdersListener() {
+            if (!ordersTableBody) return;
+            // Listen for all orders, sorted by timestamp desc
+            const q = query(getCollectionRef('orders'));
+            const unsub = onSnapshot(q, (snapshot) => {
+                ordersTableBody.innerHTML = '';
+                // Show only orders not finished
+                snapshot.forEach(doc => {
+                    const order = { id: doc.id, ...doc.data() };
+                    // Default to 'pending' if no status
+                    const status = order.status || 'pending';
+                    if (status === 'finished') return; // Only show unfinished
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="p-3">${order.timestamp?.toDate ? order.timestamp.toDate().toLocaleTimeString() : '-'}</td>
+                        <td class="p-3">${order.customer || '-'}</td>
+                        <td class="p-3">${order.items.map(i => `${i.name} (x${i.quantity})`).join('<br>')}</td>
+                        <td class="p-3 font-semibold">$${order.total?.toFixed(2) ?? '-'}</td>
+                        <td class="p-3">${status.charAt(0).toUpperCase() + status.slice(1)}</td>
+                        <td class="p-3">
+                            ${status === 'pending' ? `<button class="bg-blue-500 text-white px-3 py-1 rounded confirm-order" data-id="${order.id}">Confirm</button>` : ''}
+                            ${status === 'in progress' ? `<button class="bg-green-500 text-white px-3 py-1 rounded finish-order" data-id="${order.id}">Finish</button>` : ''}
+                        </td>
+                    `;
+                    ordersTableBody.appendChild(row);
                 });
-                if (window.innerWidth < 1024) closeSidebar();
             });
-        });
+            unsubscribeListeners.push(unsub);
+        }
+
+        if (ordersTableBody) {
+            ordersTableBody.addEventListener('click', async (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                const id = btn.dataset.id;
+                if (btn.classList.contains('confirm-order')) {
+                    // Set status to in progress
+                    await setDoc(getDocRef('orders', id), { status: 'in progress' }, { merge: true });
+                } else if (btn.classList.contains('finish-order')) {
+                    // Set status to finished
+                    await setDoc(getDocRef('orders', id), { status: 'finished' }, { merge: true });
+                }
+            });
+        }
+
+        // --- Navigation (Header Bar) ---
+        function setupHeaderNav() {
+            const headerNav = document.getElementById('headerNav');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const headerLinks = headerNav.querySelectorAll('.header-link');
+            // Mobile menu toggle
+            mobileMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                headerNav.classList.toggle('open');
+            });
+            // Hide menu on link click (mobile)
+            headerLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    if (link.id === 'signOutBtn') {
+                        signOut(auth);
+                        return;
+                    }
+                    headerLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    contentSections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId) section.classList.add('active');
+                    });
+                    // Hide nav on mobile after click
+                    if (window.innerWidth < 1024) headerNav.classList.remove('open');
+                });
+            });
+            // Hide nav when clicking outside (mobile)
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 1024 && headerNav.classList.contains('open')) {
+                    if (!headerNav.contains(e.target) && e.target !== mobileMenuBtn) {
+                        headerNav.classList.remove('open');
+                    }
+                }
+            });
+            // Hide nav on resize if desktop
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 1024) headerNav.classList.remove('open');
+                else headerNav.classList.remove('open');
+            });
+        }
+        setupHeaderNav();
 
         // --- Generic Modal Handling ---
         const setupModal = (modal, openBtnId, closeBtnId, form) => {
@@ -527,7 +838,7 @@
                     document.getElementById('userRoleDisplay').textContent = userRole;
                     updateUIVisibility(userRole);
                     loginScreen.style.display = 'none';
-                    appContainer.style.display = 'flex';
+                    appContainer.classList.remove('hidden');
                     initializeAppFunctions();
                 } else {
                     showAlert("User role not found. Please contact an admin.");
@@ -537,7 +848,7 @@
                 userId = null;
                 userRole = null;
                 loginScreen.style.display = 'flex';
-                appContainer.style.display = 'none';
+                appContainer.classList.add('hidden');
                 resetUI();
             }
         });
@@ -554,24 +865,24 @@
             // Handle visibility of admin-only UI elements based on user role
             document.querySelectorAll('.admin-only').forEach(el => {
                 const isContentSection = el.classList.contains('content-section');
-                
                 if (isContentSection) {
                     // For content sections, we DON'T manage display style here. That's for the navigation logic.
                     // We only need to handle the case where a non-admin is on an admin page.
                     if (role !== 'admin' && el.classList.contains('active')) {
                         el.classList.remove('active');
-                        document.querySelector('.sidebar-link[data-target="dashboard"]').click();
+                        // Only use header-link for navigation
+                        const dashLink = document.querySelector('.header-link[data-target="dashboard"]');
+                        if (dashLink) dashLink.click();
                     }
                 } else {
-                    // For other elements (like sidebar links), set their display property.
-                    const isLink = el.classList.contains('sidebar-link');
-                    el.style.display = role === 'admin' ? (isLink ? 'flex' : 'block') : 'none';
+                    // For other elements (like nav links), set their display property.
+                    const isLink = el.classList.contains('header-link');
+                    el.style.display = role === 'admin' ? (isLink ? 'inline-flex' : 'block') : 'none';
                 }
             });
-
             // Fallback: If a non-admin ends up with no active section, send them to the dashboard.
             if (role !== 'admin' && !document.querySelector('.content-section.active')) {
-                const dashboardLink = document.querySelector('.sidebar-link[data-target="dashboard"]');
+                const dashboardLink = document.querySelector('.header-link[data-target="dashboard"]');
                 if (dashboardLink) {
                     dashboardLink.click();
                 }
@@ -602,7 +913,85 @@
             setupStockListener();
             setupOrderListener();
             renderOrderMenu();
+            setupCouponListener();
+            setupOrdersListener();
             if(userRole === 'admin') setupStaffListener();
+        }
+                // --- Coupon Management (Settings Section) ---
+        const couponForm = document.getElementById('couponForm');
+        const couponIdInput = document.getElementById('couponId');
+        const couponCodeInput = document.getElementById('couponCodeInput');
+        const couponTypeInput = document.getElementById('couponTypeInput');
+        const couponValueInput = document.getElementById('couponValueInput');
+        const couponMaxDiscountInput = document.getElementById('couponMaxDiscountInput');
+        const couponLabelInput = document.getElementById('couponLabelInput');
+        const cancelCouponEdit = document.getElementById('cancelCouponEdit');
+        const couponTableBody = document.getElementById('couponTableBody');
+
+        if (couponForm) {
+            couponForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = couponIdInput.value;
+                const code = couponCodeInput.value.trim().toUpperCase();
+                const type = couponTypeInput.value;
+                const value = parseFloat(couponValueInput.value);
+                const maxDiscountRaw = couponMaxDiscountInput.value;
+                const maxDiscount = maxDiscountRaw !== '' ? parseFloat(maxDiscountRaw) : undefined;
+                const label = couponLabelInput.value.trim();
+                if (!code || !type || !value || !label) {
+                    showAlert('Please fill in all coupon fields.');
+                    return;
+                }
+                const data = { code, type, value, label };
+                if (!isNaN(maxDiscount) && maxDiscountRaw !== '') data.maxDiscount = maxDiscount;
+                try {
+                    if (id) {
+                        await setDoc(getDocRef('coupons', id), data);
+                    } else {
+                        await addDoc(getCollectionRef('coupons'), data);
+                    }
+                    couponForm.reset();
+                    couponIdInput.value = '';
+                } catch (error) {
+                    showAlert('Failed to save coupon.');
+                }
+            });
+        }
+
+        if (cancelCouponEdit) {
+            cancelCouponEdit.addEventListener('click', () => {
+                couponForm.reset();
+                couponIdInput.value = '';
+            });
+        }
+
+        if (couponTableBody) {
+            couponTableBody.addEventListener('click', async (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                const id = btn.dataset.id;
+                if (btn.classList.contains('edit-coupon')) {
+                    // Load coupon data for editing
+                    const docSnap = await getDoc(getDocRef('coupons', id));
+                    if (docSnap.exists()) {
+                        const c = docSnap.data();
+                        couponIdInput.value = id;
+                        couponCodeInput.value = c.code;
+                        couponTypeInput.value = c.type;
+                        couponValueInput.value = c.value;
+                        couponMaxDiscountInput.value = c.maxDiscount !== undefined ? c.maxDiscount : '';
+                        couponLabelInput.value = c.label;
+                    }
+                } else if (btn.classList.contains('delete-coupon')) {
+                    if (confirm('Delete this coupon?')) {
+                        await deleteDoc(getDocRef('coupons', id));
+                        if (couponIdInput.value === id) {
+                            couponForm.reset();
+                            couponIdInput.value = '';
+                        }
+                    }
+                }
+            });
         }
 
         // --- Recipe Builder ---
@@ -662,13 +1051,27 @@
         // --- Menu Management ---
         function setupMenuListener() {
             const unsub = onSnapshot(getCollectionRef('menus'), (snapshot) => {
-                menuTable.innerHTML = '';
+                // Group menu items by category
+                const categories = {};
                 snapshot.forEach(doc => {
                     const item = { id: doc.id, ...doc.data() };
-                    const row = document.createElement('tr');
-                    row.className = 'border-b hover:bg-gray-50';
-                    row.innerHTML = `<td class="p-4">${item.name}</td><td class="p-4">$${item.price.toFixed(2)}</td><td class="p-4">${item.category}</td><td class="p-4 space-x-2 admin-only" style="display: ${userRole === 'admin' ? 'table-cell' : 'none'}"><button class="text-blue-500 hover:text-blue-700 edit-menu" data-id="${item.id}"><i class="fas fa-edit"></i></button><button class="text-red-500 hover:text-red-700 delete-menu" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>`;
-                    menuTable.appendChild(row);
+                    const cat = item.category || 'Uncategorized';
+                    if (!categories[cat]) categories[cat] = [];
+                    categories[cat].push(item);
+                });
+                menuTable.innerHTML = '';
+                Object.keys(categories).sort().forEach(category => {
+                    // Category header row
+                    const headerRow = document.createElement('tr');
+                    headerRow.innerHTML = `<td colspan="4" class="bg-[#fff6ed] text-lg font-bold text-[#ff7e5f] py-3 px-4 border-b-2 border-[#ffe0c2]">${category}</td>`;
+                    menuTable.appendChild(headerRow);
+                    // Items in this category
+                    categories[category].forEach(item => {
+                        const row = document.createElement('tr');
+                        row.className = 'border-b hover:bg-gray-50';
+                        row.innerHTML = `<td class="p-4">${item.name}</td><td class="p-4">$${item.price.toFixed(2)}</td><td class="p-4">${item.category}</td><td class="p-4 space-x-2 admin-only" style="display: ${userRole === 'admin' ? 'table-cell' : 'none'}"><button class="text-blue-500 hover:text-blue-700 edit-menu" data-id="${item.id}"><i class="fas fa-edit"></i></button><button class="text-red-500 hover:text-red-700 delete-menu" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>`;
+                        menuTable.appendChild(row);
+                    });
                 });
                 renderOrderMenu();
             });
@@ -740,7 +1143,15 @@
                     if (item.quantity <= 10) lowStockCount++;
                     const row = document.createElement('tr');
                     row.className = `border-b hover:bg-gray-50 ${item.quantity <= 10 ? 'bg-red-100' : ''}`;
-                    row.innerHTML = `<td class="p-4">${item.name}</td><td class="p-4 font-bold">${item.quantity}</td><td class="p-4">${item.unit}</td><td class="p-4 space-x-2 admin-only" style="display: ${userRole === 'admin' ? 'table-cell' : 'none'}"><button class="text-blue-500 hover:text-blue-700 edit-stock" data-id="${item.id}"><i class="fas fa-edit"></i></button><button class="text-red-500 hover:text-red-700 delete-stock" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>`;
+                    let actionsCell = '';
+                    if (userRole === 'admin') {
+                        actionsCell = `<td class="p-4 space-x-2 admin-only" style="display: table-cell;"><button class="text-blue-500 hover:text-blue-700 edit-stock" data-id="${item.id}"><i class="fas fa-edit"></i></button><button class="text-red-500 hover:text-red-700 delete-stock" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>`;
+                    } else {
+                        actionsCell = '<td class="p-4 admin-only" style="display: none;"></td>';
+                    }
+                    // Fix floating point for "Vanilla syrup" only
+                    let displayQty = item.name === 'Vanilla syrup' ? parseFloat(item.quantity).toFixed(2).replace(/\.00$/, '') : (Number.isInteger(item.quantity) ? item.quantity : parseFloat(item.quantity).toFixed(2));
+                    row.innerHTML = `<td class="p-4">${item.name}</td><td class="p-4 font-bold">${displayQty}</td><td class="p-4">${item.unit}</td>${actionsCell}`;
                     stockTable.appendChild(row);
                 });
                 lowStockItemsEl.textContent = lowStockCount;
@@ -848,13 +1259,27 @@
             orderMenuGrid.innerHTML = 'Loading menu...';
             const menuSnapshot = await getDocs(getCollectionRef('menus'));
             orderMenuGrid.innerHTML = '';
+            // Group by category for order menu
+            const categories = {};
             menuSnapshot.forEach(doc => {
                 const item = { id: doc.id, ...doc.data() };
-                const card = document.createElement('div');
-                card.className = 'bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow';
-                card.innerHTML = `<h4 class="font-bold">${item.name}</h4><p class="text-gray-600">$${item.price.toFixed(2)}</p>`;
-                card.addEventListener('click', () => addToOrder(item));
-                orderMenuGrid.appendChild(card);
+                const cat = item.category || 'Uncategorized';
+                if (!categories[cat]) categories[cat] = [];
+                categories[cat].push(item);
+            });
+            Object.keys(categories).sort().forEach(category => {
+                // Category header
+                const header = document.createElement('div');
+                header.className = 'col-span-full text-lg font-bold text-[#ff7e5f] mt-2 mb-1';
+                header.textContent = category;
+                orderMenuGrid.appendChild(header);
+                categories[category].forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow';
+                    card.innerHTML = `<h4 class="font-bold">${item.name}</h4><p class="text-gray-600">$${item.price.toFixed(2)}</p>`;
+                    card.addEventListener('click', () => addToOrder(item));
+                    orderMenuGrid.appendChild(card);
+                });
             });
         }
 
@@ -868,18 +1293,101 @@
             updateCurrentOrderDisplay();
         }
 
+        // Coupon logic
+        let appliedCoupon = null;
+        let discountAmount = 0;
+        const couponInput = document.getElementById('couponCode');
+        const couponFeedback = document.getElementById('couponFeedback');
+        const discountRow = document.getElementById('discountRow');
+        const orderDiscountEl = document.getElementById('orderDiscount');
+        const orderSubtotalEl = document.getElementById('orderSubtotal');
+
+        // --- Coupon logic (Firestore-based) ---
+        let COUPONS = {};
+        function setupCouponListener() {
+            const unsub = onSnapshot(getCollectionRef('coupons'), (snapshot) => {
+                COUPONS = {};
+                const couponTableBody = document.getElementById('couponTableBody');
+                if (couponTableBody) couponTableBody.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const c = { id: doc.id, ...doc.data() };
+                    COUPONS[c.code.toUpperCase()] = c;
+                    // Render in table if in settings section
+                    if (couponTableBody) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="p-3 font-mono">${c.code}</td>
+                            <td class="p-3">${c.type === 'percent' ? 'Percent (%)' : 'Amount ($)'}</td>
+                            <td class="p-3">${c.type === 'percent' ? c.value + '%' : '$' + c.value}</td>
+                            <td class="p-3">${c.maxDiscount !== undefined ? ('$' + c.maxDiscount) : '-'}</td>
+                            <td class="p-3">${c.label}</td>
+                            <td class="p-3">
+                                <button class="text-blue-500 hover:text-blue-700 edit-coupon" data-id="${c.id}"><i class="fas fa-edit"></i></button>
+                                <button class="text-red-500 hover:text-red-700 delete-coupon" data-id="${c.id}"><i class="fas fa-trash"></i></button>
+                            </td>`;
+                        couponTableBody.appendChild(row);
+                    }
+                });
+            });
+            unsubscribeListeners.push(unsub);
+        }
+
+        function validateCoupon(code, subtotal) {
+            const c = COUPONS[code.toUpperCase()];
+            if (!c) return { valid: false };
+            let discount = 0;
+            if (c.type === 'percent') discount = subtotal * (c.value / 100);
+            else if (c.type === 'amount') discount = c.value;
+            if (typeof c.maxDiscount === 'number' && !isNaN(c.maxDiscount)) {
+                if (discount > c.maxDiscount) discount = c.maxDiscount;
+            }
+            if (discount > subtotal) discount = subtotal;
+            return { valid: true, discount, label: c.label, maxDiscount: c.maxDiscount };
+        }
+
         function updateCurrentOrderDisplay() {
             currentOrderList.innerHTML = '';
-            let total = 0;
+            let subtotal = 0;
             currentOrder.forEach((item, index) => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'flex justify-between items-center text-sm';
                 itemEl.innerHTML = `<div><p class="font-semibold">${item.name}</p><p class="text-gray-500">$${item.price.toFixed(2)} x ${item.quantity}</p></div><button class="text-red-500 remove-order-item" data-index="${index}"><i class="fas fa-times-circle"></i></button>`;
                 currentOrderList.appendChild(itemEl);
-                total += item.price * item.quantity;
+                subtotal += item.price * item.quantity;
             });
+            // Coupon logic
+            let discount = 0;
+            appliedCoupon = null;
+            if (couponInput && couponInput.value.trim() !== '') {
+                const result = validateCoupon(couponInput.value.trim(), subtotal);
+                if (result.valid) {
+                    discount = result.discount;
+                    appliedCoupon = result;
+                    couponFeedback.textContent = `Applied: ${result.label}`;
+                    couponFeedback.className = 'text-green-600 text-xs mt-1';
+                } else {
+                    couponFeedback.textContent = 'Invalid coupon code.';
+                    couponFeedback.className = 'text-red-500 text-xs mt-1';
+                }
+            } else {
+                couponFeedback.textContent = '';
+            }
+            discountAmount = discount;
+            orderSubtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+            if (discount > 0) {
+                discountRow.style.display = '';
+                orderDiscountEl.textContent = `-$${discount.toFixed(2)}`;
+            } else {
+                discountRow.style.display = 'none';
+                orderDiscountEl.textContent = '-$0.00';
+            }
+            const total = subtotal - discount;
             orderTotalEl.textContent = `$${total.toFixed(2)}`;
             placeOrderBtn.disabled = currentOrder.length === 0;
+        }
+
+        if (couponInput) {
+            couponInput.addEventListener('input', updateCurrentOrderDisplay);
         }
 
         currentOrderList.addEventListener('click', (e) => {
@@ -889,84 +1397,160 @@
             }
         });
 
-        placeOrderBtn.addEventListener('click', async () => {
-            if (currentOrder.length === 0) return;
-            placeOrderBtn.disabled = true;
-            placeOrderBtn.textContent = 'Placing Order...';
-            try {
-                await runTransaction(db, async (transaction) => {
-                    // Phase 1: Reads
-                    const menuRefs = currentOrder.map(item => getDocRef('menus', item.id));
-                    const menuSnaps = await Promise.all(menuRefs.map(ref => transaction.get(ref)));
-                    const requiredStock = new Map();
-                    for (let i = 0; i < currentOrder.length; i++) {
-                        const orderItem = currentOrder[i];
-                        const menuSnap = menuSnaps[i];
-                        if (!menuSnap.exists() || !menuSnap.data().recipe) throw new Error(`Recipe for ${orderItem.name} not found.`);
-                        for (const ingredient of menuSnap.data().recipe) {
-                            const deduction = ingredient.quantity * orderItem.quantity;
-                            const existing = requiredStock.get(ingredient.stockId) || { required: 0, name: ingredient.name };
-                            requiredStock.set(ingredient.stockId, { required: existing.required + deduction, name: existing.name });
+        // Handle take order form submit
+        const takeOrderForm = document.getElementById('takeOrderForm');
+        if (takeOrderForm) {
+            takeOrderForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (currentOrder.length === 0) return;
+                placeOrderBtn.disabled = true;
+                placeOrderBtn.textContent = 'Placing Order...';
+                try {
+                    await runTransaction(db, async (transaction) => {
+                        // Phase 1: Reads
+                        const menuRefs = currentOrder.map(item => getDocRef('menus', item.id));
+                        const menuSnaps = await Promise.all(menuRefs.map(ref => transaction.get(ref)));
+                        const requiredStock = new Map();
+                        for (let i = 0; i < currentOrder.length; i++) {
+                            const orderItem = currentOrder[i];
+                            const menuSnap = menuSnaps[i];
+                            if (!menuSnap.exists() || !menuSnap.data().recipe) throw new Error(`Recipe for ${orderItem.name} not found.`);
+                            for (const ingredient of menuSnap.data().recipe) {
+                                const deduction = ingredient.quantity * orderItem.quantity;
+                                const existing = requiredStock.get(ingredient.stockId) || { required: 0, name: ingredient.name };
+                                requiredStock.set(ingredient.stockId, { required: existing.required + deduction, name: existing.name });
+                            }
                         }
-                    }
-                    const stockRefs = Array.from(requiredStock.keys()).map(id => getDocRef('stock', id));
-                    const stockSnaps = stockRefs.length ? await Promise.all(stockRefs.map(ref => transaction.get(ref))) : [];
-                    const stockData = new Map();
-                    stockSnaps.forEach(snap => {
-                        if (snap.exists()) stockData.set(snap.id, { ref: snap.ref, currentQuantity: snap.data().quantity, name: snap.data().name });
+                        const stockRefs = Array.from(requiredStock.keys()).map(id => getDocRef('stock', id));
+                        const stockSnaps = stockRefs.length ? await Promise.all(stockRefs.map(ref => transaction.get(ref))) : [];
+                        const stockData = new Map();
+                        stockSnaps.forEach(snap => {
+                            if (snap.exists()) stockData.set(snap.id, { ref: snap.ref, currentQuantity: snap.data().quantity, name: snap.data().name });
+                        });
+                        // Phase 2: Validation
+                        for (const [stockId, req] of requiredStock.entries()) {
+                            const stock = stockData.get(stockId);
+                            if (!stock) throw new Error(`Stock item "${req.name}" not found.`);
+                            if (stock.currentQuantity < req.required) throw new Error(`Not enough stock for ${stock.name}.`);
+                        }
+                        // Phase 3: Writes
+                        for (const [stockId, req] of requiredStock.entries()) {
+                            const stock = stockData.get(stockId);
+                            transaction.update(stock.ref, { quantity: stock.currentQuantity - req.required });
+                        }
+                        // Coupon/discount
+                        let subtotal = currentOrder.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                        let discount = discountAmount || 0;
+                        let total = subtotal - discount;
+                        if (total < 0) total = 0;
+                        const customerName = document.getElementById('customerName')?.value || '';
+                        const couponCode = couponInput?.value?.trim() || '';
+                        const orderData = {
+                            items: currentOrder.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
+                            subtotal,
+                            discount,
+                            total,
+                            coupon: appliedCoupon ? couponCode.toUpperCase() : '',
+                            customer: customerName,
+                            timestamp: Timestamp.now(),
+                            status: 'pending'
+                        };
+                        transaction.set(doc(getCollectionRef('orders')), orderData);
                     });
-                    // Phase 2: Validation
-                    for (const [stockId, req] of requiredStock.entries()) {
-                        const stock = stockData.get(stockId);
-                        if (!stock) throw new Error(`Stock item "${req.name}" not found.`);
-                        if (stock.currentQuantity < req.required) throw new Error(`Not enough stock for ${stock.name}.`);
-                    }
-                    // Phase 3: Writes
-                    for (const [stockId, req] of requiredStock.entries()) {
-                        const stock = stockData.get(stockId);
-                        transaction.update(stock.ref, { quantity: stock.currentQuantity - req.required });
-                    }
-                    const total = currentOrder.reduce((sum, item) => sum + item.price * item.quantity, 0);
-                    const orderData = { items: currentOrder.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })), total, timestamp: Timestamp.now() };
-                    transaction.set(doc(getCollectionRef('orders')), orderData);
-                });
-                showAlert('Order placed successfully!');
-                currentOrder = [];
-                updateCurrentOrderDisplay();
-            } catch (error) {
-                showAlert(`Order failed: ${error.message}`);
-            } finally {
-                placeOrderBtn.disabled = false;
-                placeOrderBtn.textContent = 'Place Order';
-            }
-        });
+                    showAlert('Order placed successfully!');
+                    currentOrder = [];
+                    updateCurrentOrderDisplay();
+                    takeOrderForm.reset();
+                } catch (error) {
+                    showAlert(`Order failed: ${error.message}`);
+                } finally {
+                    placeOrderBtn.disabled = false;
+                    placeOrderBtn.textContent = 'Place Order';
+                }
+            });
+        }
         
         // --- Dashboard / Daily Report ---
         function setupOrderListener() {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const startOfToday = Timestamp.fromDate(today);
-            const q = query(getCollectionRef('orders'), where('timestamp', '>=', startOfToday));
-            const unsub = onSnapshot(q, (snapshot) => {
-                let totalRevenue = 0, totalOrders = 0;
-                const itemCounts = {};
-                dailyOrdersTable.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const order = { id: doc.id, ...doc.data() };
-                    totalOrders++;
-                    totalRevenue += order.total;
-                    order.items.forEach(item => { itemCounts[item.name] = (itemCounts[item.name] || 0) + item.quantity; });
-                    const row = document.createElement('tr');
-                    row.className = 'border-b hover:bg-gray-50';
-                    row.innerHTML = `<td class="p-4">${order.timestamp.toDate().toLocaleTimeString()}</td><td class="p-4">${order.items.map(i => `${i.name} (x${i.quantity})`).join(', ')}</td><td class="p-4 font-semibold">$${order.total.toFixed(2)}</td>`;
-                    dailyOrdersTable.insertBefore(row, dailyOrdersTable.firstChild);
+            // --- Daily Report Listener with Date Picker ---
+            const reportDatePicker = document.getElementById('reportDatePicker');
+            const downloadReportBtn = document.getElementById('downloadReportBtn');
+            let currentReportDate = new Date();
+            let lastUnsub = null;
+
+            function setDateInputToToday() {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                reportDatePicker.value = `${yyyy}-${mm}-${dd}`;
+            }
+
+            function listenForDate(date) {
+                if (lastUnsub) lastUnsub();
+                const start = new Date(date);
+                start.setHours(0, 0, 0, 0);
+                const end = new Date(start);
+                               end.setDate(end.getDate() + 1);
+                const q = query(getCollectionRef('orders'), where('timestamp', ">=", Timestamp.fromDate(start)), where('timestamp', "<", Timestamp.fromDate(end)));
+                lastUnsub = onSnapshot(q, (snapshot) => {
+                    let totalRevenue = 0, totalOrders = 0;
+                    const itemCounts = {};
+                    dailyOrdersTable.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const order = { id: doc.id, ...doc.data() };
+                        totalOrders++;
+                        totalRevenue += order.total;
+                        order.items.forEach(item => { itemCounts[item.name] = (itemCounts[item.name] || 0) + item.quantity; });
+                        const row = document.createElement('tr');
+                        row.className = 'border-b hover:bg-gray-50';
+                        row.innerHTML = `<td class="p-4">${order.timestamp.toDate().toLocaleTimeString()}</td><td class="p-4">${order.items.map(i => `${i.name} (x${i.quantity})`).join(', ')}</td><td class="p-4 font-semibold">$${order.total.toFixed(2)}</td>`;
+                        dailyOrdersTable.insertBefore(row, dailyOrdersTable.firstChild);
+                    });
+                    totalRevenueEl.textContent = `$${totalRevenue.toFixed(2)}`;
+                    totalOrdersEl.textContent = totalOrders;
+                    const popular = Object.entries(itemCounts).sort((a, b) => b[1] - a[1]);
+                    popularItemEl.textContent = popular.length > 0 ? popular[0][0] : '-';
                 });
-                totalRevenueEl.textContent = `$${totalRevenue.toFixed(2)}`;
-                totalOrdersEl.textContent = totalOrders;
-                const popular = Object.entries(itemCounts).sort((a, b) => b[1] - a[1]);
-                popularItemEl.textContent = popular.length > 0 ? popular[0][0] : '-';
+                unsubscribeListeners.push(lastUnsub);
+            }
+
+            // Download CSV for the selected day
+            async function downloadReportForDate(date) {
+                const start = new Date(date);
+                start.setHours(0, 0, 0, 0);
+                const end = new Date(start);
+                end.setDate(end.getDate() + 1);
+                const q = query(getCollectionRef('orders'), where('timestamp', ">=", Timestamp.fromDate(start)), where('timestamp', "<", Timestamp.fromDate(end)));
+                const snapshot = await getDocs(q);
+                let csv = 'Time,Items,Total\n';
+                snapshot.forEach(doc => {
+                    const order = doc.data();
+                    const time = order.timestamp.toDate().toLocaleTimeString();
+                    const items = order.items.map(i => `${i.name} (x${i.quantity})`).join('; ');
+                    const total = order.total.toFixed(2);
+                    csv += `"${time}","${items}","$${total}"\n`;
+                });
+                // Download as file
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Cafe_Daily_Report_${date}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+            }
+
+            // Set up listeners
+            setDateInputToToday();
+            listenForDate(reportDatePicker.value);
+            reportDatePicker.addEventListener('change', (e) => {
+                listenForDate(e.target.value);
             });
-            unsubscribeListeners.push(unsub);
+            downloadReportBtn.addEventListener('click', () => {
+                downloadReportForDate(reportDatePicker.value);
+            });
         }
     </script>
 </body>
