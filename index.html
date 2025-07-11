@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cafe Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -389,6 +389,18 @@
                                         <input type="text" id="customerName" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="Optional">
                                     </div>
                                     <div class="mb-3">
+                                        <label for="customerNote" class="block text-sm font-medium text-gray-700">Order Note / Custom Request</label>
+                                        <textarea id="customerNote" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" rows="2" placeholder="e.g. Extra shot, less sweet, no ice..."></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="paymentMethod" class="block text-sm font-medium text-gray-700">Payment Method</label>
+                                        <select id="paymentMethod" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                                            <option value="cash">Cash</option>
+                                            <option value="debit">Debit/Credit Card</option>
+                                            <option value="online">Online Payment</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="couponCode" class="block text-sm font-medium text-gray-700">Coupon Code</label>
                                         <input type="text" id="couponCode" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="Enter coupon if any">
                                         <p id="couponFeedback" class="text-xs mt-1"></p>
@@ -515,6 +527,24 @@
                                     </tr>
                                 </thead>
                                 <tbody id="couponTableBody"></tbody>
+                            </table>
+                        </div>
+                        <hr class="my-8">
+                        <h2 class="text-2xl font-semibold mb-4">Digital Receipts</h2>
+                        <div class="overflow-x-auto" style="max-width:100vw;">
+                            <table class="min-w-[600px] w-full text-left" id="receiptTable">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="p-3">Time</th>
+                                        <th class="p-3">Customer</th>
+                                        <th class="p-3">Items</th>
+                                        <th class="p-3">Total</th>
+                                        <th class="p-3">Payment</th>
+                                        <th class="p-3">Note</th>
+                                        <th class="p-3">Download</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="receiptTableBody"></tbody>
                             </table>
                         </div>
                     </div>
@@ -762,6 +792,7 @@
                 }
             });
         }
+        
 
         // --- Navigation (Header Bar) ---
         function setupHeaderNav() {
@@ -907,6 +938,11 @@
                 document.getElementById('loginError').textContent = "Invalid email or password.";
             }
         });
+        
+        document.getElementById('signOutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth);
+        });
 
         function initializeAppFunctions() {
             if (!userRole || !userId) return;
@@ -916,7 +952,46 @@
             renderOrderMenu();
             setupCouponListener();
             setupOrdersListener();
+            setupReceiptListener();
             if(userRole === 'admin') setupStaffListener();
+        // --- Digital Receipt Listener ---
+        function setupReceiptListener() {
+            const receiptTableBody = document.getElementById('receiptTableBody');
+            if (!receiptTableBody) return;
+            const q = query(getCollectionRef('orders'));
+            const unsub = onSnapshot(q, (snapshot) => {
+                receiptTableBody.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const order = { id: doc.id, ...doc.data() };
+                    const time = order.timestamp?.toDate ? order.timestamp.toDate().toLocaleString() : '-';
+                    const items = order.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
+                    const total = `$${order.total?.toFixed(2) ?? '-'}`;
+                    const payment = order.payment || '-';
+                    const note = order.note || '';
+                    // Generate receipt text
+                    const receiptText = `CafeMNS Receipt\nTime: ${time}\nCustomer: ${order.customer || '-'}\nItems: ${items}\nTotal: ${total}\nPayment: ${payment}\nNote: ${note}`;
+                    const downloadBtn = `<button class="bg-indigo-600 text-white px-3 py-1 rounded download-receipt" data-id="${order.id}" data-receipt="${encodeURIComponent(receiptText)}">Download</button>`;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td class="p-3">${time}</td><td class="p-3">${order.customer || '-'}</td><td class="p-3">${items}</td><td class="p-3 font-semibold">${total}</td><td class="p-3">${payment}</td><td class="p-3">${note}</td><td class="p-3">${downloadBtn}</td>`;
+                    receiptTableBody.appendChild(row);
+                });
+            });
+            unsubscribeListeners.push(unsub);
+            // Download handler
+            receiptTableBody.addEventListener('click', (e) => {
+                const btn = e.target.closest('.download-receipt');
+                if (!btn) return;
+                const receipt = decodeURIComponent(btn.dataset.receipt);
+                const blob = new Blob([receipt], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Cafe_Receipt_${btn.dataset.id}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+            });
+        }
         }
                 // --- Coupon Management (Settings Section) ---
         const couponForm = document.getElementById('couponForm');
@@ -1445,6 +1520,8 @@
                         let total = subtotal - discount;
                         if (total < 0) total = 0;
                         const customerName = document.getElementById('customerName')?.value || '';
+                        const customerNote = document.getElementById('customerNote')?.value || '';
+                        const paymentMethod = document.getElementById('paymentMethod')?.value || 'cash';
                         const couponCode = couponInput?.value?.trim() || '';
                         const orderData = {
                             items: currentOrder.map(item => ({ name: item.name, price: item.price, quantity: item.quantity })),
@@ -1453,6 +1530,8 @@
                             total,
                             coupon: appliedCoupon ? couponCode.toUpperCase() : '',
                             customer: customerName,
+                            note: customerNote,
+                            payment: paymentMethod,
                             timestamp: Timestamp.now(),
                             status: 'pending'
                         };
